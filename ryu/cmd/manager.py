@@ -26,22 +26,21 @@ hub.patch()
 #
 # NOTE: this modifies sys.path and thus affects the following imports.
 # eg. oslo.config.cfg.
-import ryu.contrib
+#import ryu.contrib
 
 from oslo.config import cfg
 import logging
-import sys
+#import sys
 
 from ryu import log
 log.early_init_log(logging.DEBUG)
 
-from ryu import flags
+#from ryu import flags
 from ryu import version
 from ryu.app import wsgi
 from ryu.base.app_manager import AppManager
 from ryu.controller import controller
 from ryu.topology import switches
-
 
 CONF = cfg.CONF
 CONF.register_cli_opts([
@@ -62,15 +61,18 @@ def main():
     log.init_log()
 
     app_lists = CONF.app_lists + CONF.app
+    logging.debug("cli app list = %s " % app_lists)
     # keep old behaivor, run ofp if no application is specified.
     if not app_lists:
 #        don't run default handler.
-#        app_list = ['ryu.controller.ofp_handler']
-        app_lists = []
+#        app_lists = ['ryu.controller.ofp_handler']
+        app_lists = ['nik.proxy.ofp_handler']
 
     app_mgr = AppManager.get_instance()
     app_mgr.load_apps(app_lists)
+    logging.debug("App manager bricks: %s" % app_mgr.report_bricks())
     contexts = app_mgr.create_contexts()
+    logging.debug("contexts: %s ", contexts)
     services = []
     services.extend(app_mgr.instantiate_apps(**contexts))
 
