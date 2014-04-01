@@ -94,3 +94,4 @@ def register_service(service):
     frm = inspect.stack()[1]
     m = inspect.getmodule(frm[0])
     m._SERVICE_NAME = service
+
