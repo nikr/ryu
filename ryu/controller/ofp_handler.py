@@ -27,6 +27,7 @@ from ryu.controller.handler import set_ev_handler
 from ryu.controller.handler import HANDSHAKE_DISPATCHER, CONFIG_DISPATCHER,\
     MAIN_DISPATCHER
 
+from nik import ofp_proxy, classifier
 
 # The state transition: HANDSHAKE -> CONFIG -> MAIN
 #
@@ -46,6 +47,7 @@ class OFPHandler(ryu.base.app_manager.RyuApp):
     def __init__(self, *args, **kwargs):
         super(OFPHandler, self).__init__(*args, **kwargs)
         self.name = 'ofp_event'
+        self.classifier = classifier.OFClassifier()
 
     def start(self):
         super(OFPHandler, self).start()
@@ -64,6 +66,9 @@ class OFPHandler(ryu.base.app_manager.RyuApp):
         self.logger.debug('hello ev %s', ev)
         msg = ev.msg
         datapath = msg.datapath
+
+        #classifier 
+        self.classifier.classify_from_switch(msg, datapath)
 
         # check if received version is supported.
         # pre 1.0 is not supported
